@@ -26,7 +26,50 @@ const database = `${configMongo.db.host}:${process.env.DB_PORT || 27017}/${confi
 
 mongoose.Promise = require('bluebird');
 
-mongoose.connect(database).connection;
+const options = {
+  db: { native_parser: true },
+  replset: {
+    auto_reconnect: false,
+    poolSize: 10,
+    socketOptions: {
+      keepAlive: 120,
+      connectTimeoutMS: 30000,
+    },
+  },
+  server: {
+    poolSize: 10,
+    socketOptions: {
+      keepAlive: 20,
+      connectTimeoutMS: 30000,
+    },
+  },
+};
+
+mongoose.connect(database, options).connection;
+
+// CONNECTION EVENTS
+// When successfully connected
+mongoose.connection.on('connected', () => {
+  console.log('Mongoose default connection open');
+});
+
+// If the connection throws an error
+mongoose.connection.on('error', (err) => {
+  console.log(`Mongoose default connection error: ${err}`);
+});
+
+// When the connection is disconnected
+mongoose.connection.on('disconnected', () => {
+  console.log('Mongoose default connection disconnected');
+});
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+    console.log('Mongoose default connection disconnected through app termination');
+    process.exit(0);
+  });
+});
 
 if (task !== 'test') {
   app.listen(port);
