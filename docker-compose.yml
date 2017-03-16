@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+
+### Workspace Utilities Container ###########################
+    starter-service:
+        image: gokusenz/dockergk:nodejs
+        ports:
+            - "8080:8080"
+        volumes:
+            - .:/usr/src/app
+
+### MongoDB Container #######################################
+    mongo:
+        image: gokusenz/dockergk:mongo
+        ports:
+            - "27017:27017"
+        volumes:
+            - ./data/mongo:/data/db
+
+### Add more Containers below ###############################
