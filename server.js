@@ -39,7 +39,7 @@ const options = {
   server: {
     poolSize: 10,
     socketOptions: {
-      keepAlive: 20,
+      keepAlive: 120,
       connectTimeoutMS: 30000,
     },
   },
